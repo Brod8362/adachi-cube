@@ -1,0 +1,8 @@
+STAIR_WIDTH = 10;
+STAIR_HEIGHT = 1;
+STAIR_STEPS = 10;
+
+for (i = [0: STAIR_STEPS]) {
+    translate([0, 0, i*STAIR_HEIGHT])
+    cube([STAIR_WIDTH, STAIR_STEPS-i, STAIR_HEIGHT]);
+}
