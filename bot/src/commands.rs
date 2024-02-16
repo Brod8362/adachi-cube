@@ -9,7 +9,9 @@ pub async fn roll(
     ctx: Context<'_>, 
     #[description = "What will you ask the Adachi cube?"] question: Option<String>
 ) -> Result<(), Error> {
-    //TODO use question as a seed
+    let random_file = ctx.data().folders.pick_random()?;
+    let contents = format!("selected: {}", random_file.to_string_lossy());
+    ctx.say(contents).await?;
     Ok(())
 }
 

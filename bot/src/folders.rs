@@ -1,6 +1,5 @@
 use std::{path::{Path, PathBuf}, error::Error};
 
-use rand::rngs::ThreadRng;
 use thiserror::Error;
 
 
@@ -13,7 +12,9 @@ pub struct Folders {
 #[derive(Error, Debug)]
 enum FolderPathError {
     #[error("`{0}` is not a directory")]
-    NotADirectory(String)
+    NotADirectory(String),
+    #[error("`{0}` has no chilren")]
+    NoFilesInDirectory(String)
 }
 
 impl Folders {
@@ -38,20 +39,28 @@ impl Folders {
         })
     }
 
-    pub fn pick_random(&self) -> &Path {
+    pub fn pick_random(&self) -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
         //return random file
         let num: i32 = rand::random();
-        let folder = match num % 3 {
+        let folder = match (num % 3).abs() {
             0 => &self.true_path,
             1 => &self.maybe_path,
             2 => &self.false_path,
             _ => panic!("math is broken!")
         };
-        let children: Vec<&Path> = folder.ancestors().filter(|x| x.is_file()).collect();
+        let children: Vec<PathBuf> = folder.read_dir()?
+            .filter(|x| x.is_ok())
+            .map(|x| x.unwrap().path())
+            .collect();
         if children.is_empty() {
-            panic!("No children in {}", folder.to_string_lossy());
+            //this shouldn't be able to happen anyway, but in case it changes during runtime
+            return Err(
+                Box::new(
+                    FolderPathError::NotADirectory(folder.to_str().unwrap().to_owned()
+                )
+            ));
         }
         let index: usize = rand::random::<usize>() % children.len();
-        children[index]
+        Ok(children[index].clone())
     }
 }
