@@ -1,6 +1,7 @@
 use std::{env, path::PathBuf, error::Error};
 
 use analytics::AnalyticsClient;
+use crate::analytics::on_error;
 use folders::Folders;
 use serenity::prelude::GatewayIntents;
 
@@ -46,6 +47,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
             event_handler: |ctx, event, framework, data| {
                 Box::pin(commands::event_handler(ctx, event, framework, data))
             },
+            on_error: |error| Box::pin(on_error(error)),
             ..Default::default()
         })
         .setup(|ctx, _ready, framework| {

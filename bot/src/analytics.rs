@@ -2,6 +2,8 @@ use chrono::{DateTime, Utc};
 use influxdb::InfluxDbWriteable;
 use thiserror::Error;
 
+use crate::BotData;
+
 pub struct AnalyticsClient {
     influx_client: Option<influxdb::Client>,
     identifier: String,
@@ -171,5 +173,31 @@ impl AnalyticsClient {
     }
 }
 
+pub async fn on_error(error: poise::FrameworkError<'_, BotData, Error>) {
+    // This is our custom error handler
+    // They are many errors that can occur, so we only handle the ones we want to customize
+    // and forward the rest to the default handler
+    match error {
+        poise::FrameworkError::Setup { error, ctx: _, framework, ..} => {
+            let msg = format!("failed to start bot: {:?}", error);
+            framework.user_data().await.analytics.error(&msg).await.unwrap();
+            panic!("{}", msg);
+
+        },
+        poise::FrameworkError::Command { error, ctx, .. } => {
+            let log = format!("Error in command `{}`: {:?}", ctx.command().name, error);
+            ctx.data().analytics.warn(log).await.unwrap();
+        }
+        error => {
+            let analytics = &error.ctx().unwrap().data().analytics;
+            let log = format!("unknown error: {:#?}", &error.to_string());
+            analytics.error(log).await.unwrap();
+            if let Err(e) = poise::builtins::on_error(error).await {
+                let inner_err = format!("Error while handling error: {}", e);
+                analytics.error(inner_err).await.unwrap();
+            }
+        }
+    }
+}
 //TODO: implement a generic error handler
 // https://github.com/serenity-rs/poise/blob/f6b94ca83bc9f98815112456adab0d3031e37319/examples/basic_structure/main.rs#L22
