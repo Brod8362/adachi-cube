@@ -1,0 +1,7 @@
+token = "abcdef"
+influx_host = "http://localhost:8086"
+influx_database = "discord"
+analytics_identifier = "adachi"
+true_folder_path = "files/true"
+maybe_folder_path = "files/maybe"
+false_folder_path = "files/false"

@@ -36,7 +36,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 
     let folders = Folders::new(&bot_config.true_folder_path, &bot_config.maybe_folder_path, &bot_config.false_folder_path)?;
 
-    let analytics = AnalyticsClient::new::<String>(None, None, &bot_config.analytics_identifier)?; //TODO not None here
+    let analytics = AnalyticsClient::new::<String>(bot_config.influx_host, bot_config.influx_database, &bot_config.analytics_identifier)?; //TODO not None here
 
     let intents = GatewayIntents::non_privileged();
 

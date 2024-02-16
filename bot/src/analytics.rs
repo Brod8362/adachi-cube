@@ -74,6 +74,7 @@ impl AnalyticsClient {
         }
         // if neither are set, default to no-op
         if host.is_none() && database.is_none() {
+            println!("defaulting to analytics no-op");
             return Ok(
                 Self {
                     influx_client: None,
@@ -105,7 +106,7 @@ impl AnalyticsClient {
         Ok(())
     }
 
-    pub async fn update_usage(&self, guild_id: usize, _channel_id: usize) -> Result<(), Error> {
+    pub async fn update_usage(&self, guild_id: u64, _channel_id: u64) -> Result<(), Error> {
         if self.influx_client.is_none() {
             return Ok(());
         }
@@ -121,7 +122,7 @@ impl AnalyticsClient {
         Ok(())
     }
 
-    pub async fn update_guild_name<S: Into<String>>(&self, _guild_id: usize, _name: S) -> Result<(), Error> {
+    pub async fn update_guild_name<S: Into<String>>(&self, _guild_id: u64, _name: S) -> Result<(), Error> {
         if self.influx_client.is_none() {
             return Ok(());
         }
@@ -133,7 +134,8 @@ impl AnalyticsClient {
         if self.influx_client.is_none() {
             return Ok(());
         }
-        todo!()
+        //TODO log here
+        Ok(())
     }
 
     pub async fn info<S: Into<String>>(&self, message: S) -> Result<(), Error> {

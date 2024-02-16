@@ -26,7 +26,8 @@ pub async fn ask(
     let reply = CreateReply {..Default::default()}
         .attachment(attachment)
         .content(content);
-    ctx.send(reply).await?;        
+    ctx.send(reply).await?;     
+    ctx.data().analytics.update_usage(ctx.guild_id().unwrap().get(), ctx.channel_id().get()).await?;   
     Ok(())
 }
 
