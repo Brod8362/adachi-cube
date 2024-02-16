@@ -19,7 +19,7 @@ pub struct BotData {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     //parse config
     let config_path_str = match env::var("ADACHI_CONFIG_PATH") {
         Ok(t) => t,
@@ -43,6 +43,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: vec![commands::roll(), commands::invite()],
+            event_handler: |ctx, event, framework, data| {
+                Box::pin(commands::event_handler(ctx, event, framework, data))
+            },
             ..Default::default()
         })
         .setup(|ctx, _ready, framework| {

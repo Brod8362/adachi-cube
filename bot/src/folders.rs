@@ -1,4 +1,4 @@
-use std::{path::{Path, PathBuf}, error::Error};
+use std::{path::PathBuf, error::Error};
 
 use thiserror::Error;
 
@@ -18,7 +18,7 @@ enum FolderPathError {
 }
 
 impl Folders {
-    pub fn new(true_path_str: &String, maybe_path_str: &String, false_path_str: &String) -> Result<Folders, Box<dyn Error>> {
+    pub fn new(true_path_str: &String, maybe_path_str: &String, false_path_str: &String) -> Result<Folders, Box<dyn Error + Send + Sync>> {
         let true_path = PathBuf::from(true_path_str);
         let maybe_path = PathBuf::from(maybe_path_str);
         let false_path = PathBuf::from(false_path_str);
@@ -53,10 +53,9 @@ impl Folders {
             .map(|x| x.unwrap().path())
             .collect();
         if children.is_empty() {
-            //this shouldn't be able to happen anyway, but in case it changes during runtime
             return Err(
                 Box::new(
-                    FolderPathError::NotADirectory(folder.to_str().unwrap().to_owned()
+                    FolderPathError::NoFilesInDirectory(folder.to_str().unwrap().to_owned()
                 )
             ));
         }

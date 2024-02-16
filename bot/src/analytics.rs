@@ -1,4 +1,4 @@
-use std::{error::Error, sync::{Arc, Mutex}};
+use std::{sync::{Arc, Mutex}};
 
 use thiserror::Error;
 
@@ -11,6 +11,8 @@ enum LogLevel {
     Warn,
     Error
 }
+
+type Error = Box<dyn std::error::Error + Send + Sync>;
 
 impl LogLevel {
     fn as_str(&self) -> &'static str {
@@ -31,7 +33,7 @@ pub enum AnalyticsClientError {
 }
 
 impl AnalyticsClient {
-    pub fn new<S: Into<String>>(host: Option<S>, database: Option<S>) -> Result<AnalyticsClient, Box<dyn Error>> {
+    pub fn new<S: Into<String>>(host: Option<S>, database: Option<S>) -> Result<AnalyticsClient, Error> {
         if host.is_some() ^ database.is_some() {
             //both are required
             if host.is_none() {
@@ -52,28 +54,28 @@ impl AnalyticsClient {
         })
     }
 
-    pub fn update_guilds(&self, count: usize, shard_id: usize) -> Result<(), Box<dyn Error>> {
+    pub fn update_guilds(&self, count: usize, shard_id: u32) -> Result<(), Error> {
         if self.influx_client.is_none() {
             return Ok(());
         }
         todo!()
     }
 
-    pub fn update_usage(&self, guild_id: usize, channel_id: usize) -> Result<(), Box<dyn Error>> {
+    pub fn update_usage(&self, guild_id: usize, channel_id: usize) -> Result<(), Error> {
         if self.influx_client.is_none() {
             return Ok(());
         }
         todo!()
     }
 
-    pub fn update_guild_name<S: Into<String>>(&self, guild_id: usize, name: S) -> Result<(), Box<dyn Error>> {
+    pub fn update_guild_name<S: Into<String>>(&self, guild_id: usize, name: S) -> Result<(), Error> {
         if self.influx_client.is_none() {
             return Ok(());
         }
         todo!()
     }
 
-    fn log_generic<S: Into<String>>(&self, message: S, level: LogLevel) -> Result<(), Box<dyn Error>> {
+    fn log_generic<S: Into<String>>(&self, message: S, level: LogLevel) -> Result<(), Error> {
         if self.influx_client.is_none() {
             return Ok(());
         }
