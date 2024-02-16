@@ -170,3 +170,6 @@ impl AnalyticsClient {
         self.log_generic(message, LogLevel::Error).await
     }
 }
+
+//TODO: implement a generic error handler
+// https://github.com/serenity-rs/poise/blob/f6b94ca83bc9f98815112456adab0d3031e37319/examples/basic_structure/main.rs#L22
