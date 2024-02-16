@@ -1,10 +1,11 @@
-use std::{os, env, path::PathBuf};
-
-use config::BotConfig;
+use std::{env, path::PathBuf};
 
 mod config;
+mod analytics;
 
 static DEFAULT_CONFIG_PATH: &'static str = "./config.toml";
+
+pub type DiscordClient = serenity::Client;
 
 fn main() {
     let config_path_str = match env::var("ADACHI_CONFIG_PATH") {

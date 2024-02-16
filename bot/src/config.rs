@@ -4,7 +4,9 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BotConfig {
-    pub token: String
+    pub token: String,
+    pub influx_host: Option<String>,
+    pub influx_database: Option<String>
 }
 
 pub fn parse_file(path: &Path) -> Result<BotConfig, Box<dyn Error>> {
