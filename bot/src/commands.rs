@@ -1,4 +1,5 @@
-use serenity::{client::FullEvent, builder::CreateMessage};
+use poise::CreateReply;
+use serenity::{client::FullEvent, builder::{CreateMessage, CreateAttachment}};
 
 use crate::BotData;
 
@@ -12,8 +13,10 @@ pub async fn ask(
     #[description = "What will you ask the Adachi cube?"] question: Option<String>
 ) -> Result<(), Error> {
     let random_file = ctx.data().folders.pick_random()?;
-    let contents = format!("selected: {}", random_file.to_string_lossy());
-    ctx.say(contents).await?;
+    let attachment = CreateAttachment::path(random_file.as_path()).await?;
+    let reply = CreateReply {..Default::default()}
+        .attachment(attachment);
+    ctx.send(reply).await?;        
     Ok(())
 }
 
