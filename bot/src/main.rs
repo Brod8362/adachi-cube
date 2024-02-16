@@ -6,6 +6,7 @@ use serenity::prelude::GatewayIntents;
 mod analytics;
 mod commands;
 mod config;
+mod folders;
 
 static DEFAULT_CONFIG_PATH: &'static str = "./config.toml";
 

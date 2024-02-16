@@ -9,6 +9,7 @@ pub async fn roll(
     ctx: Context<'_>, 
     #[description = "What will you ask the Adachi cube?"] question: Option<String>
 ) -> Result<(), Error> {
+    //TODO use question as a seed
     Ok(())
 }
 
