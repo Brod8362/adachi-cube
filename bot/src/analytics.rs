@@ -61,6 +61,16 @@ struct BotUsageReading {
     guild: String
 }
 
+#[derive(InfluxDbWriteable)]
+struct LogEntry {
+    time: DateTime<Utc>,
+    value: String,
+    #[influxdb(tag)]
+    bot: String,
+    #[influxdb(tag)]
+    level: String
+}
+
 impl AnalyticsClient {
     pub fn new<S: Into<String>>(host: Option<S>, database: Option<S>, identifier: &String) -> Result<AnalyticsClient, Error> {
         if host.is_some() ^ database.is_some() {
@@ -130,11 +140,21 @@ impl AnalyticsClient {
     }
 
     async fn log_generic<S: Into<String>>(&self, message: S, level: LogLevel) -> Result<(), Error> {
-        println!("[{}{}\x1b[0m] {}", level.ansi_code(), level.as_str(), message.into());
+        let now = Utc::now();
+        let msg: String = message.into();
+        println!("[{} {}{}\x1b[0m] {}", now, level.ansi_code(), level.as_str(), msg);
         if self.influx_client.is_none() {
             return Ok(());
         }
-        //TODO log here
+        let r = LogEntry {
+            time: now,
+            value: msg,
+            bot: self.identifier.clone(),
+            level: String::from(level.as_str()),
+        }.into_query("log");
+        if let Some(client) = &self.influx_client {
+            client.query(r).await?;
+        }
         Ok(())
     }
 
