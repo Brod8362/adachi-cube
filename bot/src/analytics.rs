@@ -46,7 +46,7 @@ pub enum AnalyticsClientError {
 #[derive(InfluxDbWriteable)]
 struct GuildCountReading {
     time: DateTime<Utc>,
-    value: i32,
+    value: f32,
     #[influxdb(tag)]
     bot: String,
     #[influxdb(tag)]
@@ -56,7 +56,7 @@ struct GuildCountReading {
 #[derive(InfluxDbWriteable)]
 struct BotUsageReading {
     time: DateTime<Utc>,
-    value: i32,
+    value: f32,
     #[influxdb(tag)]
     bot: String,
     #[influxdb(tag)]
@@ -108,7 +108,7 @@ impl AnalyticsClient {
         }
         let r = GuildCountReading {
             time: Utc::now(),
-            value: count as i32,
+            value: count as f32,
             bot: self.identifier.clone(),
             shard_id: shard_id.to_string(),
         }.into_query("guild_count");
@@ -124,7 +124,7 @@ impl AnalyticsClient {
         }
         let r = BotUsageReading {
             time: Utc::now(),
-            value: 1,
+            value: 1f32,
             bot: self.identifier.clone(),
             guild: guild_id.to_string(),
         }.into_query("use");
