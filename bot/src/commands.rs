@@ -13,7 +13,13 @@ pub async fn ask(
     #[description = "What will you ask the Adachi cube?"] question: Option<String>
 ) -> Result<(), Error> {
     let random_file = ctx.data().folders.pick_random()?;
-    let attachment = CreateAttachment::path(random_file.as_path()).await?;
+    let mut attachment = CreateAttachment::path(random_file.as_path()).await?;
+    let extension: String = if let Some(ext) = random_file.extension() {
+        ext.to_string_lossy().into()
+    } else {
+        String::from("mp4")
+    };
+    attachment.filename = format!("judgement.{}", extension);
     let content: String = if let Some(q) = question {
         let mut q = q.replace("`", "").replace("@", "");
         if !q.ends_with('?') {
