@@ -2,3 +2,4 @@
 bot/config.toml
 bot/.vscode
 tools/render_output
+tools/adachi-bot
