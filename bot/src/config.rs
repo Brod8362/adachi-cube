@@ -18,11 +18,17 @@ fn false_default_path() -> String {
     String::from(FALSE_DEFAULT)
 }
 
+fn default_analytics_identifier() -> String {
+    String::from("adachi")
+}
+
 #[derive(Debug, Deserialize)]
 pub struct BotConfig {
     pub token: String,
     pub influx_host: Option<String>,
     pub influx_database: Option<String>,
+    #[serde(default = "default_analytics_identifier")]
+    pub analytics_identifier: String,
     #[serde(default = "true_default_path")]
     pub true_folder_path: String,
     #[serde(default = "maybe_default_path")]

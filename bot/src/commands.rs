@@ -36,20 +36,20 @@ pub async fn event_handler(
     data: &BotData
 ) -> Result<(), Error> {
     match event {
-        FullEvent::Ready { data_about_bot, .. } => {
+        FullEvent::Ready { data_about_bot: _, .. } => {
             //TODO log in analytics
-            data.analytics.info("online")?;
+            data.analytics.info("online").await?;
         },
         FullEvent::GuildCreate { guild , is_new } => {
             if is_new.unwrap_or(true) {
                 let guilds = ctx.http.get_guilds(None, None).await?;
-                data.analytics.update_guilds(guilds.len(), ctx.shard_id.0)?;
+                data.analytics.update_guilds(guilds.len(), ctx.shard_id.0).await?;
                 alert_guild_status_changed(ctx, Some(guild.name.clone()), guild.id.get(), guilds.len(), true).await?;
             }
         },
         FullEvent::GuildDelete { incomplete , full } => {
             let guilds = ctx.http.get_guilds(None, None).await?;
-            data.analytics.update_guilds(guilds.len(), ctx.shard_id.0)?;
+            data.analytics.update_guilds(guilds.len(), ctx.shard_id.0).await?;
             let guild_name_maybe = full.clone().map(|k| k.name);
             alert_guild_status_changed(ctx, guild_name_maybe, incomplete.id.get(), guilds.len(), false).await?;
         }
