@@ -7,7 +7,7 @@ type Error = Box<dyn std::error::Error + Send + Sync>;
 
 
 #[poise::command(slash_command)]
-pub async fn roll(
+pub async fn ask(
     ctx: Context<'_>, 
     #[description = "What will you ask the Adachi cube?"] question: Option<String>
 ) -> Result<(), Error> {
@@ -38,7 +38,7 @@ pub async fn event_handler(
     match event {
         FullEvent::Ready { data_about_bot, .. } => {
             //TODO log in analytics
-            println!("ready ok!");
+            data.analytics.info("online")?;
         },
         FullEvent::GuildCreate { guild , is_new } => {
             if is_new.unwrap_or(true) {

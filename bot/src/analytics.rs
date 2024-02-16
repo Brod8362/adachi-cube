@@ -7,7 +7,7 @@ pub struct AnalyticsClient {
 }
 
 enum LogLevel {
-    Log,
+    Info,
     Warn,
     Error
 }
@@ -17,9 +17,17 @@ type Error = Box<dyn std::error::Error + Send + Sync>;
 impl LogLevel {
     fn as_str(&self) -> &'static str {
         match self {
-            LogLevel::Log => "log",
+            LogLevel::Info => "info",
             LogLevel::Error => "error",
             LogLevel::Warn => "warn"
+        }
+    }
+
+    fn ansi_code(&self) -> &'static str {
+        match self {
+            LogLevel::Error => "\x1b[33m",
+            LogLevel::Warn => "\x1b[31m",
+            _ => "\x1b[32m"
         }
     }
 }
@@ -76,9 +84,22 @@ impl AnalyticsClient {
     }
 
     fn log_generic<S: Into<String>>(&self, message: S, level: LogLevel) -> Result<(), Error> {
+        println!("[{}{}\x1b[0m] {}", level.ansi_code(), level.as_str(), message.into());
         if self.influx_client.is_none() {
             return Ok(());
         }
         todo!()
+    }
+
+    pub fn info<S: Into<String>>(&self, message: S) -> Result<(), Error> {
+        self.log_generic(message, LogLevel::Info)
+    }
+
+    pub fn warn<S: Into<String>>(&self, message: S) -> Result<(), Error> {
+        self.log_generic(message, LogLevel::Warn)
+    }
+
+    pub fn error<S: Into<String>>(&self, message: S) -> Result<(), Error> {
+        self.log_generic(message, LogLevel::Error)
     }
 }

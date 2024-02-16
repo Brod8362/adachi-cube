@@ -42,7 +42,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![commands::roll(), commands::invite()],
+            commands: vec![commands::ask(), commands::invite()],
             event_handler: |ctx, event, framework, data| {
                 Box::pin(commands::event_handler(ctx, event, framework, data))
             },
