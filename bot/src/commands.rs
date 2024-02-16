@@ -14,8 +14,18 @@ pub async fn ask(
 ) -> Result<(), Error> {
     let random_file = ctx.data().folders.pick_random()?;
     let attachment = CreateAttachment::path(random_file.as_path()).await?;
+    let content: String = if let Some(q) = question {
+        let mut q = q.replace("`", "").replace("@", "");
+        if !q.ends_with('?') {
+            q.push('?');
+        }
+        format!("The Adachi cube has spoken: `{}`", q)
+    } else {
+        String::from("The Adachi cube has spoken.")
+    };
     let reply = CreateReply {..Default::default()}
-        .attachment(attachment);
+        .attachment(attachment)
+        .content(content);
     ctx.send(reply).await?;        
     Ok(())
 }
