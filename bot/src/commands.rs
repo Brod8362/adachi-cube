@@ -33,7 +33,10 @@ pub async fn ask(
         .attachment(attachment)
         .content(content);
     ctx.send(reply).await?;     
-    ctx.data().analytics.update_usage(ctx.guild_id().unwrap().get(), ctx.channel_id().get()).await?;   
+    if let Some(guild_id) = ctx.guild_id() {
+        ctx.data().analytics.update_usage(guild_id.get(), ctx.channel_id().get()).await?;   
+    }
+    
     Ok(())
 }
 
@@ -92,11 +95,12 @@ async fn alert_guild_status_changed(ctx: &serenity::all::Context, guild_name: Op
     );
     //get owner user
     let application_info = ctx.http.get_current_application_info().await?;
-    let owner = application_info.owner.unwrap();
-    let channel = owner.create_dm_channel(ctx.http.clone()).await?;
-    channel.send_message(
-        ctx.http.clone(), 
-        CreateMessage::new().content(&message)
-    ).await?;
-    Ok(())
+    if let Some(owner) = application_info.owner {
+        let channel = owner.create_dm_channel(ctx.http.clone()).await?;
+        channel.send_message(
+            ctx.http.clone(), 
+            CreateMessage::new().content(&message)
+        ).await?;
+    };
+    Ok(()) 
 }

@@ -31,7 +31,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     let bot_config = match config::parse_file(&config_path)  {
         Ok(c) => c,
         Err(e) => {
-            panic!("Failed to parse config file at {}: {}", config_path.to_str().unwrap(), e)
+            panic!("Failed to parse config file at {}: {}", config_path.to_string_lossy(), e)
         }
     };
 
